@@ -1,0 +1,57 @@
+/*=====================================
+ *         Piano Steps Header
+ *       Written by: John Buccieri
+ *     Property of: Drexel Theta Tau
+ *=====================================*/
+
+#ifndef piano_h
+#define piano_h
+
+#include "Arduino.h"
+#include "constants.h"
+
+#define MAX_STEPS 13 
+#define HISTORY_LENGTH 13
+
+class PianoSteps {
+
+    private:
+      int stepCount;
+      
+    public:
+      /* Constructor and Destructor */
+      PianoSteps(int steps);
+      ~PianoSteps(void);
+
+      /*************************************************************
+       *  Dynamic Threshold Array for real time sensor calibration 
+       *  Pin 0 | Pin 1 | Pin 2 | Pin 3 | ... Pin N |
+       * Thresh1|Thresh2|Thresh3|Thresh4|    ThresN |
+       *************************************************************/
+      int *thresholds;
+      /* 
+       * Dynamic Sensor History for real time calculation of sensor thresholds
+       *         Pin 0 | Pin 1 | Pin 2 |... Pin N |
+       * Hist 0  Val00 | Val10 | Val20
+       * Hist 1  Val01 | Val11 | Val21
+       * Hist 2  Val02 | Val12 | Val22
+       *  ...
+       * Hist M
+       ************************************************************************/
+      int **sensorHistory;
+     
+      /* Calibration Methods */
+      int lightSensorCalibration(void);
+      int recalibration(void);
+
+      /* Get Methods */
+      int getStepCount(void);
+      int thresholdDump(void);
+      int sensorHistoryDump(void);
+
+      
+};
+
+
+#endif 
+
