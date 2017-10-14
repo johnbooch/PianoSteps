@@ -2,7 +2,7 @@
  *  Arduino Hardware Pin Probing Library
  *  Author: John Buccieri
  *  Last Date Updated: 07/18/17
- *====================================/
+ *====================================*/
 
 /*****************************************************************************************************
  * IMPORTANT NOTE: If you do not have unused analog pins tied to ground, active analog methods will not 
@@ -29,7 +29,7 @@ const int digitalPinNumber[] = {UNO_MAX_DIGITAL_PINS, MEGA_MAX_DIGITAL_PINS, NAN
 
 
 Probe::Probe(int id) {
-
+/* Constructor */
   boardId = id;
   maxAnalogPins = analogPinNumber[id];
   maxDigitalPins = digitalPinNumber[id];
@@ -39,7 +39,7 @@ Probe::Probe(int id) {
 }
 
 Probe::~Probe(void) {
-
+/* Destructor */
   free(analogPinVals);
   free(digitalPinVals);
 }
