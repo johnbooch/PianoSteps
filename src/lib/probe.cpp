@@ -9,7 +9,7 @@
  * behave properly
  * 
  * Hardware Pin Probing
- * A library dedicated to dedicated to efficient continous probing of Arduino GPIOS, Analog, and Digital Pins
+ * A library dedicated to efficient continuous probing of Arduino GPIOS, Analog, and Digital Pins
  * 
  ****************************************************************************************************/
 
