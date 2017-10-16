@@ -26,7 +26,7 @@ class PianoSteps {
       /*************************************************************
        *  Dynamic Threshold Array for real time sensor calibration 
        *  Pin 0 | Pin 1 | Pin 2 | Pin 3 | ... Pin N |
-       * Thresh1|Thresh2|Thresh3|Thresh4|    ThresN |
+       * Thresh1|Thresh2|Thresh3|Thresh4|    Thresh N |
        *************************************************************/
       int *thresholds;
       /* 
