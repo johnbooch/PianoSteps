@@ -1,56 +1,50 @@
-#=====================================#
-#       Piano Steps Python Script
-#       Written by: John Buccieri
-#     Property of: Drexel Theta Tau
-#=====================================#
+'''
+Piano Steps Python Script
+Written by: John Buccieri
+Property of: Drexel Theta Tau
+'''
 
 import serial
-import pygames
+import pygame
 
-onpi = True #True ==  Rasp Pi 3
-
-pygame.mixer.pre_init(channels=13, buffer=1024)
+pygame.mixer.pre_init(channels=1, buffer=1024)
 pygame.mixer.init()
 
-class PianoStairs ():
-        
-        def __init__(self):
+class PianoSteps():
+    #Constructor
+    def __init__(self):
 
-                self.num_pins = 13
-                self.prev_inputs = [False] * self.num_pins
 
-                if onpi == True:
-                        self.ser = serial.Serial('/dev/ttyACM0', 9600)
+        self.numPins = 1
+        self.prevInputs = [False] * self.numPins
 
-                notes =  ["c","c#","d", "d#", "e","f", "f#", "g", "g#", "a","a#","b","c"]
-                self.piano_notes = [pygame.mixer.Sound("piano_notes/"+note+".wav") for note in notes]
+        self.ser = serial.Serial('/dev/tty.usbmodem14111', 9600)
 
-        
+        notes = ["a", "b", "bb", "c", "cb", "d", "e", "eb", "g#", "f", "fb", "g", "gb"]
+        self.pianoNotes = [pygame.mixer.Sound("pianoNotes/"+note+".wav") for note in notes]
 
-        def play_piano_note(self, i):
-                self.piano_notes[i].play();*
+    # Play Method
+    def playNote(self, i):
+        self.pianoNotes[i].play()
 
-        def run(self):
+    # Run Method
+    def run(self):
 
-                # time.sleep(3);
+        while True:
+            line = self.ser.readline()
+            line.strip()
 
-                while True:
-                        print("DEBUG")
-                        if onpi:
-                                line = self.ser.readline()
-                        else:
-                                line = raw_input()
+            # Failsafe for improper hardware setup
+            assert len(line) == self.numPins
 
-                        if len(line) < self.num_pins:
-                                continue
+            for i, pin in enumerate(list(line)):
+                currentRun = pin is not '0'
+                prevRun = self.prevInputs[i]
+                if currentRun and not prevRun:
+                    self.playNote(i)
+                self.prevInputs[i] = currentRun
 
-                        for i in range(self.num_pins):
-                                current_run = line[i] != '0'
-                                prev_run = self.prev_inputs[i]
-                                if current_run and not prev_run:
-                                        self.play_piano_piano(i);
-                                self.prev_inputs[i] = current_run
 
 if __name__ == "__main__":
-    pianoStairs = PianoStairs()
+    pianoStairs = PianoSteps()
     pianoStairs.run()
