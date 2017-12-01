@@ -8,15 +8,13 @@
 #define piano_h
 
 #include "Arduino.h"
-#include "constants.h"
+#include "probe.h"
 
-#define MAX_STEPS 13 
-#define HISTORY_LENGTH 13
-
-class PianoSteps {
+class PianoSteps: public BasicProbe {
 
     private:
       int stepCount;
+	  int absoluteThreshold;
       
     public:
       /* Constructor and Destructor */
@@ -29,7 +27,8 @@ class PianoSteps {
        * Thresh1|Thresh2|Thresh3|Thresh4|    Thresh N |
        *************************************************************/
       int *thresholds;
-      /* 
+	  
+      /************************************************************************ 
        * Dynamic Sensor History for real time calculation of sensor thresholds
        *         Pin 0 | Pin 1 | Pin 2 |... Pin N |
        * Hist 0  Val00 | Val10 | Val20
@@ -46,12 +45,8 @@ class PianoSteps {
 
       /* Get Methods */
       int getStepCount(void);
+	  int getAbsoluteThreshold(void);
       int thresholdDump(void);
       int sensorHistoryDump(void);
-
-      
 };
-
-
 #endif 
-

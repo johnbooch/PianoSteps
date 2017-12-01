@@ -24,12 +24,12 @@ const int uno_digital_pins[UNO_MAX_DIGITAL_PINS] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9
 const int mega_analog_pins[MEGA_MAX_ANALOG_PINS] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 const int mega_digital_pins[MEGA_MAX_DIGITAL_PINS] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44,45, 46, 47, 48, 49, 51, 52, 53};
 
+/* Max pins for supported Arduino board types */
 const int analogPinNumber[] = {UNO_MAX_ANALOG_PINS,  MEGA_MAX_ANALOG_PINS, NANO_MAX_ANALOG_PINS, MICRO_MAX_ANALOG_PINS, MINI_MAX_ANALOG_PINS, INVALID_ID};
 const int digitalPinNumber[] = {UNO_MAX_DIGITAL_PINS, MEGA_MAX_DIGITAL_PINS, NANO_MAX_DIGITAL_PINS, MICRO_MAX_DIGITAL_PINS, MINI_MAX_DIGITAL_PINS, INVALID_ID};
 
-
-Probe::Probe(int id) {
 /* Constructor */
+BasicProbe::BasicProbe(int id) {
   boardId = id;
   maxAnalogPins = analogPinNumber[id];
   maxDigitalPins = digitalPinNumber[id];
@@ -38,8 +38,8 @@ Probe::Probe(int id) {
   digitalPinVals = (int *) malloc(maxDigitalPins*sizeof(int));
 }
 
-Probe::~Probe(void) {
 /* Destructor */
+BasicProbe::~BasicProbe(void) {
   free(analogPinVals);
   free(digitalPinVals);
 }
@@ -58,8 +58,18 @@ int Probe::digitalProbe(int pin){
   return digitalRead(pin);
 }
 
-int Probe::analogDump(int values[], bool serialPrint) {
+bool Probe::isAnalogPinHigh(int pin){
+	bool isActive = analogProbe(pin) != 0? TRUE:FALSE;
+	return isActive 
+}
 
+bool Probe::isDigitalPinHigh(int pin){
+	bool isActive = digitalProbe(pin) != 0?TRUE: FALSE;
+	return isActive 
+}
+
+/* Utility Functions */
+int Probe::analogDump(int values[], bool serialPrint) {
   for (int i = 0; i < maxAnalogPins; i++){
     values[i] = analogRead(i);
     if (serialPrint) {
@@ -67,7 +77,9 @@ int Probe::analogDump(int values[], bool serialPrint) {
       Serial.print("\t");
     }
   }
-  Serial.println();
+  if (serialPrint) {
+	  Serial.println();
+  }
 }
 
 int Probe::digitalDump(int values[], bool serialPrint) {

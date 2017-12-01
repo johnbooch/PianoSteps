@@ -7,14 +7,12 @@
 #include "probe.h"
 #include "pianoSteps.h"
 
-Probe PianoStepsProbe(MEGA);
-PianoSteps PianoSteps(1);
+PianoSteps PianoSteps(NUMPINS, INSTALLED_BOARD);
 
-int absoluteThreshold = 10;
+int absoluteThreshold = 10; // TODO: This is a magic number, need to find a way to accurately predict this
 
 void setup() {
   Serial.begin(9600);
-  
   PianoSteps.lightSensorCalibration();
 }
 
@@ -30,7 +28,7 @@ void loop() {
       Serial.print(0);
     }    
     recal++;
-    if (recal > 15) {
+    if (recal > 15) {    // TODO: This is a magic number, need to find a way to accurately predict this
       PianoSteps.lightSensorCalibration(); 
       recal = 0;
     }

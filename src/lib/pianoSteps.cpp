@@ -7,7 +7,7 @@
 #include "Arduino.h"
 #include "pianoSteps.h"
 
-PianoSteps::PianoSteps(int steps) {
+PianoSteps::PianoSteps(int steps, int boardId) {
 
   stepCount = steps;
 
@@ -15,7 +15,7 @@ PianoSteps::PianoSteps(int steps) {
   sensorHistory = (int **) malloc(HISTORY_LENGTH * sizeof(int *));
   for (int i = 0; i < HISTORY_LENGTH; i++) {
     sensorHistory[i] = (int *) malloc(stepCount * sizeof(int));
-    if (sensorHistory[i] == NULL) //Check for memory overflow
+    if (sensorHistory[i] == NULL) // Check for memory overflow
       abort();
   }
 
@@ -24,7 +24,8 @@ PianoSteps::PianoSteps(int steps) {
 }
 
 PianoSteps::~PianoSteps(void){
-  free(sensorHistory);  
+  free(sensorHistory);
+  free(thresholds);  
 }
 
 int PianoSteps::lightSensorCalibration(void) {
