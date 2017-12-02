@@ -1,17 +1,15 @@
-import xml.etree.cElementTreet as ET
+import xml.etree.cElementTree as ET
 
-class PianoStepsConfigurer
+class PianoStepsConfigurer:
 	def __init__(self, confFile):
-		confFileRoot = Et.parse(confFile).getRoot()
+		confFileRoot = ET.parse(confFile).getroot()
 		
-		self._parseXML(confFileRoot)
+		self.parseXML(confFileRoot)
 	
-	def parseXML(xmlTree):
-		self.configurations = {}
+	def parseXML(self, xmlTree):
+		self._configurations = {}
 		for child in xmlTree:
-			self.configuration[child.tag] = child.attrib
+			self._configurations[child.tag] = child.text
 			
-	def getConfigurations():
-		return self.configurations
-		
-	
+	def getConfigurations(self):
+		return self._configurations
