@@ -1,26 +1,27 @@
 import serial
 import pygame
-
 import PianoStepsConfigurer
 import PianStepsErrorHandler
 
 class PianoStepsRunner():
     #Constructor
-    def __init__(self):
-
-        self.numPins = 1
-        self.prevInputs = [False] * self.numPins
-		self.serialPort = '/dev/tty.usbmodem14111'
+    def __init__(self, confFle):
+    
+    	configurations = PianoStepsConfigurer(confFile).getConfigurations()
+        self.pinCount = configurations['PinCount']
+        self.boardType = configurations['BoardType']
+        self.serialPort = configurations['SerialPort']
+        self.prevInputs = [False] * self.pinCount
+        notes = ["a", "b", "bb", "c", "cb", "d", "e", "eb", "g#", "f", "fb", "g", "gb"]
+        self.pianoNotes = [pygame.mixer.Sound("pianoNotes/"+note+".wav") for note in notes]
 		
 		try {
-			self.ser = serial.Serial(serialPort, 9600)
+			self.ser = serial.Serial(self.serialPort, 9600)
 		}
 		except Exception as e {
 			raise PianStepsErrorHandler(errType, errID)
 		}
-        notes = ["a", "b", "bb", "c", "cb", "d", "e", "eb", "g#", "f", "fb", "g", "gb"]
-        self.pianoNotes = [pygame.mixer.Sound("pianoNotes/"+note+".wav") for note in notes]
-
+       
     # Play Method
     def playNote(self, i):
         self.pianoNotes[i].play()
