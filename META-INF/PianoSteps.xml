@@ -3,5 +3,7 @@
 	<PinCount></PinCount>
 	<BoardType></BoardType>
     <SerialPort></SerialPort>
+    <BaudRate></BaudRate>
+    <ScaleType></ScaleType>
 </PianoSteps>
 

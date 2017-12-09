@@ -1,4 +1,10 @@
 class PianoStepsErrorHandler(Exception):
-	def __init__(self, errType = None, errID = None):
-		pass
 
+	errorIDs = {'Serial': ['Failed to conntect to serial port', 'No serial port discovered', 'Serial connection interrupted'],
+				'Configuration': ['Failed to parse XML Conf File'],
+				''}
+
+
+	def __init__(self, errID, errType, severity):
+		
+		

@@ -1,8 +1,9 @@
 import PianoStepsRunner
+import PianoStepsErrorHandler
 
 try:
 	pianoStepsRunner = PianoStepsRunner()
 	pianoStepsRunner.run()
 
-except PianoStepsErrorHandler as e:
-	pass
+except PianoStepsErrorHandler as PSE:
+	
