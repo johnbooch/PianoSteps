@@ -26,12 +26,12 @@ void loop() {
     }
     else {
       Serial.print(0);
-    }    
+    }
     recal++;
     if (recal > 15) {    // TODO: This is a magic number, need to find a way to accurately predict this
       PianoSteps.lightSensorCalibration(); 
       recal = 0;
     }
   }
-  delay(100);
+  delay(100); // TODO: This is magic number, need to find a way to accurately predict this
 }

@@ -29,6 +29,10 @@ PianoSteps::~PianoSteps(void){
 }
 
 int PianoSteps::lightSensorCalibration(void) {
+
+}
+
+int PianoSteps::lightSensorRecalibration(void) {
   memset(thresholds, 0, stepCount * sizeof(int));
   
   for (int i = 0; i < HISTORY_LENGTH; i++) {

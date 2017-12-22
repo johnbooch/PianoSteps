@@ -5,5 +5,5 @@ try:
 	pianoStepsRunner = PianoStepsRunner()
 	pianoStepsRunner.run()
 
-except PianoStepsErrorHandler as PSE:
+except PianoStepsError as PSE:
 	

@@ -14,7 +14,6 @@ class PianoSteps: public BasicProbe {
 
     private:
       int stepCount;
-	  int absoluteThreshold;
       
     public:
       /* Constructor and Destructor */
@@ -38,14 +37,19 @@ class PianoSteps: public BasicProbe {
        * Hist M
        ************************************************************************/
       int **sensorHistory;
+	  
+	  /*********************************************************
+	  * Measurement of minimum voltage drop to be considered a signal
+	  * Calculated during initial calibration of Piano Steps Environment
+	  ***********************************************************/
+	  int absoluteThreshold;
      
       /* Calibration Methods */
       int lightSensorCalibration(void);
-      int recalibration(void);
+      int lightSensorRecalibration(void);
 
       /* Get Methods */
       int getStepCount(void);
-	  int getAbsoluteThreshold(void);
       int thresholdDump(void);
       int sensorHistoryDump(void);
 };
