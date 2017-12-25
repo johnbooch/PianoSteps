@@ -1,41 +1,25 @@
-import serial
-import PianoStepsError
+from PianoStepsError import PianoStepsError
+from serial import Serial, SerialException, SerialTimeoutException
 
 class ArduinoSerial(Serial):
-    __init__(self, port, baudRate = 9600, timeout = 0.1):
-        super.__init__(baudRate, timeout)
+
+    def __init__(self, port, baudrate=9600, timeout=0.1):
+        Serial.__init__(baudrate, timeout)
         self.port = port
-        self.baudRate = baudRate
-        self.timeout = timeout
     
     def connect(self):
-        try:
-            self.open(self.port)
-        except SerialError:
-            raise new PianoStepsError('Serial', 1)
-    
+        self.open()
+
     def readSerialLine(self):
-        try: 
-            line = self.readLine()
-        except: SerialTimeoutError:
-            raise new PianoStepsError('Serial', 3)
-        return line
+        data = self.readline()
+        return data
 
     def readSerial(self, size):
-        try: 
-            line = self.read(size)
-        except: SerialTimeoutError:
-            raise new PianoStepsError('Serial', 3)
-        return line
+        data = self.read(size)
+        return data
 
-    def writeSerial(self, data, encoding):
-        try:
-            self.write(data)
-        except SerialTimeoutError:
-            raise new PianoStepsError('Serial', 3)
+    def writeSerial(self, data):
+        self.write(data)
 
-
-    def disconnect(): 
+    def disconnect(self):
         self.close()
-
-    
