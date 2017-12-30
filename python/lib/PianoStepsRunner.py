@@ -3,7 +3,8 @@ import pygame
 from ArduinoSerial import ArduinoSerial
 from PianoStepsErrorHandler import PSEHandler
 from PianoStepsConfigurer import PianoStepsConfigurer
-from PianoStepsError import PianoStepsError
+
+import PianoStepsExceptions as Exceptions
 
 
 class PianoStepsRunner(ArduinoSerial):
@@ -29,21 +30,21 @@ class PianoStepsRunner(ArduinoSerial):
         pass
 
     def _playNotes(self, activePins):
-        for pin in activePins: self.pianoNotes[pin].play()
+        for pin in activePins:
+            self.pianoNotes[pin].play()
 
     def _processSerialLine(self, line):
         line = line.strip().split(' ')
-
-        if PianoStepsError.isErrorCode(*line):
-            raise PianoStepsError(*line)
-
+        if Exceptions.isValid(*line):
+            raise Exceptions.deserialize(*line)
+        
         line = list(map(bool, map(int, line[0])))
         line = [pin for pin, value in enumerate(line) if (value != False and value != self.serialHistory[pin])]
         return line
 
     def _loadSoundFiles(self):
         if not PianoStepsRunner.scales.has_key(self.scale):
-            raise PianoStepsError('Sound', 2)
+            raise Exceptions.deserialize('Sound', 2)
 
         self.pianoNotes = [pygame.mixer.Sound("pianoNotes/${self.scale}/" + note + ".wav") for note in
                            PianoStepsRunner.scales[self.scale]]
@@ -56,10 +57,21 @@ class PianoStepsRunner(ArduinoSerial):
          while True:
             try:
                 activePins = self._processSerialLine(self.readSerialLine())
-
                 self._playNotes(activePins)
-
                 self.serialHistory = self._updateSerialHistory(activePins)
-
-            except PianoStepsError as PE:
-                pass
+                
+            except Exceptions.PSInformation as exc:
+                print(exc)
+                
+            except Exceptions.PSWarning as exc:
+                print(exc)
+                
+            except Exceptions.PSError as exc:
+                print(exc)
+                print('Exiting...')
+                return 1
+                
+            except Exception as exc:
+                print(exc)
+                print('Exiting...')
+                return 1

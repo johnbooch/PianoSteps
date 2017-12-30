@@ -1,7 +1,11 @@
-import os
-
+from os import path as path
 from lib.PianoStepsRunner import PianoStepsRunner
 
-PianoStepsConfPath = os.path.dirname(os.path.abspath(__file__))
-PianoSteps = PianoStepsRunner('${PianoSteps_Path}/META-INF/PianoSteps.xml')
-PianoSteps.run()
+def main():
+    PianoStepsConfPath = path.dirname(path.abspath(__file__))
+    PianoSteps = PianoStepsRunner('${PianoSteps_Path}/META-INF/PianoSteps.xml')
+    return PianoSteps.run()
+
+if __name__ == '__main__':
+    import sys
+    exit(main(sys.argv[1:]))
