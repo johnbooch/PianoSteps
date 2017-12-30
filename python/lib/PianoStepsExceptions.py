@@ -61,7 +61,7 @@ ERRORS = {
         ]
 }
 
-def isValid(errID=None, errType=None):
+def isErrorCode(errID=None, errType=None):
     '''Returns True if the serialized exception is valid. False otherwise'''
     
     if errID is None or errType is None:

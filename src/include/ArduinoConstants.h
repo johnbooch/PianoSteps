@@ -9,11 +9,11 @@
 
 #include <Arduino.h>
 
-/* Generic Constants */
+/* Global Constants */
 #define FALSE 0
 #define TRUE !FALSE
-#define SUCCESS 1
-#define FAILURE 0
+#define SUCCESS 0
+#define FAILURE 1
 
 /* Arduino Hardware Constants*/
 
@@ -36,11 +36,5 @@
 #define MICRO           3
 #define MINI            4
 #define INVALID_ID      5 /* Keep this last */
- 
-/* Piano Step Hardware Setup Constants */
-#define NUMPINS 8 
-#define INSTALLED_BOARD MEGA
-#define MAX_STEPS 13 
-#define HISTORY_LENGTH 13
 
 #endif 
