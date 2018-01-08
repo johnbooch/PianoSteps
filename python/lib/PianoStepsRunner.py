@@ -6,10 +6,9 @@ from PianoStepsConfigurer import PianoStepsConfigurer
 
 import PianoStepsExceptions as Exceptions
 
+SCALES = {'ChromaticScale': ["a", "b", "bb", "c", "cb", "d", "e", "eb", "g#", "f", "fb", "g", "gb"]}
 
 class PianoStepsRunner(ArduinoSerial):
-
-    scales = {'ChromaticScale': ["a", "b", "bb", "c", "cb", "d", "e", "eb", "g#", "f", "fb", "g", "gb"]}
 
     def __init__(self, confFile):
         configurations = PianoStepsConfigurer(confFile).getConfigurations()
@@ -43,11 +42,13 @@ class PianoStepsRunner(ArduinoSerial):
         return line
 
     def _loadSoundFiles(self):
-        if not PianoStepsRunner.scales.has_key(self.scale):
+        if self.scale not in SCALES:
             raise Exceptions.deserialize('Sound', 2)
-
-        self.pianoNotes = [pygame.mixer.Sound("pianoNotes/${self.scale}/" + note + ".wav") for note in
-                           PianoStepsRunner.scales[self.scale]]
+        
+        self.pianoNotes = []
+        for note in SCALES[self.scale]:
+            filename = 'pianoNotes/{}/{}.wav'.format(self.scale, note)
+            self.pianoNotes.append(pygame.mixer.Sound(filename))
 
     def _updateSerialHistory(self, activePins):
         updatedSerialHistory = [pin in activePins for pin, value in enumerate(self.serialHistory)]
