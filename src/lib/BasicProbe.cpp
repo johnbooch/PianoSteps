@@ -5,88 +5,118 @@
  *====================================*/
 
 /*****************************************************************************************************
- * IMPORTANT NOTE: If you do not have unused analog pins tied to ground, active analog methods will not 
- * behave properly
  * 
  * Hardware Pin Probing
  * A library dedicated to efficient continuous probing of Arduino GPIOS, Analog, and Digital Pins
  * 
  ****************************************************************************************************/
 
-#include "probe.h"
 #include "Arduino.h"
+#include "include/BasicProbe.h"
 
-/* Pin references for digital and analog pins on Arduino Uno */
-const int uno_analog_pins[UNO_MAX_ANALOG_PINS] = {0, 1, 2, 3, 4, 5};
-const int uno_digital_pins[UNO_MAX_DIGITAL_PINS] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13};
 
-/* Pin references for digital and analog pins on Arduino Mega */
-const int mega_analog_pins[MEGA_MAX_ANALOG_PINS] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
-const int mega_digital_pins[MEGA_MAX_DIGITAL_PINS] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44,45, 46, 47, 48, 49, 51, 52, 53};
+/*
+ * Constructor
+ *
+ *
+ */
 
-/* Max pins for supported Arduino board types */
-const int analogPinNumber[] = {UNO_MAX_ANALOG_PINS,  MEGA_MAX_ANALOG_PINS, NANO_MAX_ANALOG_PINS, MICRO_MAX_ANALOG_PINS, MINI_MAX_ANALOG_PINS, INVALID_ID};
-const int digitalPinNumber[] = {UNO_MAX_DIGITAL_PINS, MEGA_MAX_DIGITAL_PINS, NANO_MAX_DIGITAL_PINS, MICRO_MAX_DIGITAL_PINS, MINI_MAX_DIGITAL_PINS, INVALID_ID};
-
-/* Constructor */
-BasicProbe::BasicProbe(int id) {
-  boardId = id;
-  maxAnalogPins = analogPinNumber[id];
-  maxDigitalPins = digitalPinNumber[id];
+BasicProbe::BasicProbe(int boardId) {
+  boardId = boardId;
+  maxAnalogPins = EXPAND_MAX_ANALOG_PINS(boardId);
+  maxDigitalPins = EXPAND_MAX_DIGITAL_PINS(boardId);
 
   analogPinVals = (int *) malloc(maxAnalogPins*sizeof(int));
-  digitalPinVals = (int *) malloc(maxDigitalPins*sizeof(int));
+  analogPinModes = (int *) malloc(maxAnalogPins*sizeof(int));
+  digitalPinVals = (int *) malloc(maxAnalogPins*sizeof(int));
+  digitalPinModes = (int *) malloc(maxDigitalPins*sizeof(int));
 }
 
-/* Destructor */
+/* 
+ * Destructor 
+ * 
+ * 
+ * 
+ * */
+ 
 BasicProbe::~BasicProbe(void) {
   free(analogPinVals);
   free(digitalPinVals);
 }
 
-int Probe::analogProbe(int pin){
-  if (pin > maxAnalogPins) 
-    return FAILURE;
-    
-  return analogRead(pin);
+int Probe::isAnalogPin(int pin) {
+  if (pin > maxAnalogPins){
+    return INVALID_ANALOG_PIN_FAILURE;
+  }
+  return SUCCESS;
 }
 
-int Probe::digitalProbe(int pin){
-  if (pin > maxDigitalPins) 
-    return FAILURE;
-    
-  return digitalRead(pin);
+int Probe::isDigitalPin(int pin) {
+  if (pin > maxDigitalPins) {
+    return INVALID_DIGITAL_PIN_FAILURE; 
+  }
+  return SUCCESS;
 }
 
-bool Probe::isAnalogPinHigh(int pin){
-	bool isActive = analogProbe(pin) != 0? TRUE:FALSE;
-	return isActive 
+int Probe::readAnalogPin(int pin){
+  if (isAnalogPin(pin)) {
+      return ANALOG_READ_FAILURE;
+  }
+  return analogPinVals[pin] = analogRead(pin);
 }
 
-bool Probe::isDigitalPinHigh(int pin){
-	bool isActive = digitalProbe(pin) != 0?TRUE: FALSE;
-	return isActive 
+int Probe::readDigitalPin(int pin){
+  if (isDigitalin(pin)) {
+    return DIGITAL_READ_FAILURE;    
+  }
+  return digitalPinVals[pin] = digitalRead(pin);
 }
 
-/* Utility Functions */
+int Probe::writeDigitalPWMPin(int pin, int value) {
+  if (isDigitalPin(pin) && !isPWMPin(pin)) {
+    return DIGITAL_PWM_WRITE_FAILURE;
+  }
+  analogWrite(pin, value);  
+  return SUCCESS; 
+}
+
+int Probe::writeDigitalPin(int pin, int value){
+  if (isDigitalPin(pin)) {
+    return DIGITAL_WRITE_FAILURE;    
+  }
+  digitalWrite(pin, value);
+  return SUCCESS;
+}
+
+/*
+ * Utility Functions
+ *
+ *
+ *
+ */
+
 int Probe::analogDump(int values[], bool serialPrint) {
-  for (int i = 0; i < maxAnalogPins; i++){
-    values[i] = analogRead(i);
-    if (serialPrint) {
-      Serial.print(values[i]);
-      Serial.print("\t");
-    }
-  }
-  if (serialPrint) {
-	  Serial.println();
-  }
+
 }
 
 int Probe::digitalDump(int values[], bool serialPrint) {
 
-  for (int i = 0; i < maxAnalogPins; i++){
-    values[i] = analogRead(i);
-    if (serialPrint) 
-      Serial.println(values[i]);
-  }
+}
+
+int Probe::highAnalogPinsDump(bool values[], bool serialPrint) {
+
+}
+
+int Probe::highDigitalPinsDump(bool values[], bool serialPrint) {
+  
+}
+
+int Probe::isAnalogPinHigh(int pin){
+	bool isActive = readAnalogPin(pin) != 0 ? TRUE : FALSE;
+	return isActive
+}
+
+bool Probe::isDigitalPinHigh(int pin){
+	bool isActive = readDigitalPin(pin) != 0 ? TRUE : FALSE;
+	return isActive
 }

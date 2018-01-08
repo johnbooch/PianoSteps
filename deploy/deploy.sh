@@ -3,11 +3,15 @@
 set -e 
 set -a
 
-PIANOSTEPS_PATH="$1"
+PianoSteps_Path="$1"
+PinCount="$2"
+BoardType="$3"
+SerialPort="$4"
 
-DEPLOY_DIR="${PIANOSTEPS_PATH}/deploy/"
-PYTHON_INIT="${PIANOSTEPS_PATH}/python/run.py"
-PROPS_FILE="${PIANOSTEPS_PATH}/META_INF/PianoSteps.xml"
+DEPLOY_DIR="${PianoSteps_Path}/deploy/"
+PYTHON_INIT="${PianoSteps_Path}/python/run.py"
+PROPS_XML_FILE="${PianoSteps_Path}/META_INF/PianoSteps.xml"
+PROPS_JSON_FILE="${PianoSteps_Path}/META_INF/PianoSteps.json"
 
 DiscoverSerialPort() {
 	echo "Discovering Serial Ports"
@@ -33,12 +37,12 @@ InitPython() {
 UploadArduinoSrc() {
 	echo "Compiling and uploading source to Arduino"
 	
-	arduino --verify $PIANOSTEPS_PATH/src/PianoSteps.ino
+	arduino --verify $PianoSteps_Path/src/PianoSteps.ino
 	if [$? -ne 0]; then
 		echo "[FATAL] Arduino sketch failed to verify. Exiting..."
 		exit(1)
 
-	arduino --upload $PIANOSTEPS_PATH/src/PianoSteps.ino --port $SerialPort
+	arduino --upload $PianoSteps_Path/src/PianoSteps.ino --port $SerialPort
 
 	if [$? -ne 0]; then
 		echo "[FATAL] Arduinon sketch failed to upload. Exiting..."
