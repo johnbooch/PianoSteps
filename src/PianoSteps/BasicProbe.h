@@ -29,9 +29,6 @@ private:
   int numAnalogPins;  /* Max Number of on board Analog Pins */
   int numDigitalPins; /* Max Number of on board Digital Pins */
 
-  /* Reference and Resolution Values */
-  int analogReference;
-
   /* Pin value arrays */
   int *analogPinVals;    /* Analog Pin Values */
   int *digitalPinVals;   /* Digital Pin Values */

@@ -59,7 +59,7 @@ public:
   /*
    * Basic Probe reference for use in reading pin values
    */
-  Probe ProbeRef;
+  Probe *ProbeRef;
 
   /*
    * Number of sensors connected to analog ports 

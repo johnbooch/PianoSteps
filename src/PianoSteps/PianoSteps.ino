@@ -7,7 +7,7 @@
 #include "PianoSteps.h"
 
 
- ps = PianoSteps();
+PianoSteps ps;
 
 void setup()
 {

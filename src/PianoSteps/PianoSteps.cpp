@@ -28,7 +28,7 @@ PianoSteps::PianoSteps()
     }
   }
 
-  ProbeRef(boardId);
+  ProbeRef = new Probe(boardId);
 }
 
 PianoSteps::~PianoSteps(void)
@@ -51,7 +51,7 @@ uint8_t PianoSteps::run(void)
   {
     for (int i = 0; i < pinCount; i++)
     {
-      if (ProbeRef.readAnalogPin(i) > thresholds[i] + absoluteThreshold)
+      if (ProbeRef->readAnalogPin(i) > thresholds[i] + absoluteThreshold)
         SerialRef.println(SIGNAL);
       else
         SerialRef.println(NO_SIGNAL);
@@ -95,3 +95,16 @@ int PianoSteps::lightSensorRecalibration(void)
   }
   return SUCCESS;
 }
+
+int PianoSteps::calculateAbsoluteThreshold(void) {
+  //TODO
+}
+
+int PianoSteps::allocateThresholdMemory(void) {
+  //TODO
+}
+
+int PianoSteps::calculateRecalLimit(void) {
+  //TODO
+}
+
