@@ -11,7 +11,7 @@ SCALES = {'ChromaticScale': ["a", "b", "bb", "c", "cb", "d", "e", "eb", "g#", "f
 class PianoStepsRunner(ArduinoSerial):
 
     def __init__(self, confFile):
-        configurations = PianoStepsConfigurer(confFile).getConfigurations()
+        configurations = loadConfigurations(confFile)
         self._validateConfigurations(configurations)
 
         self.pinCount = configurations['PinCount']
@@ -76,3 +76,6 @@ class PianoStepsRunner(ArduinoSerial):
                 print(exc)
                 print('Exiting...')
                 return 1
+
+def loadConfigurations(confFile):
+    return json.load(confFile)

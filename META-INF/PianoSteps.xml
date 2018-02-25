@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<PianoSteps>
-	<PinCount></PinCount>
-	<BoardType></BoardType>
-    <SerialPort></SerialPort>
-    <BaudRate></BaudRate>
-    <ScaleType></ScaleType>
-</PianoSteps>
-
