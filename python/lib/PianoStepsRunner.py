@@ -8,25 +8,12 @@ import PianoStepsExceptions as Exceptions
 
 SCALES = {'ChromaticScale': ["a", "b", "bb", "c", "cb", "d", "e", "eb", "g#", "f", "fb", "g", "gb"]}
 
-class PianoStepsRunner(ArduinoSerial):
+class PianoStepsRunner:
 
     def __init__(self, confFile):
-        configurations = loadConfigurations(confFile)
-        self._validateConfigurations(configurations)
-
-        self.pinCount = configurations['PinCount']
-        self.boardType = configurations['BoardType']
-        self.scale = configurations['ScaleType']
+        self.loadConfigurations(confFile)
         self.serialHistory = [False] * self.pinCount
-
-        serialPort = configurations['SerialPort']
-        baudRate = configurations['BaudRate']
-        timeout = configurations['SerialTimeout']
-
-        ArduinoSerial.__init__(serialPort, baudRate, timeout)
-
-    def _validateConfigurations(self, confs):
-        pass
+        self.serial = ArduinoSerial(self.serialPort, self.baudRate, self.timeout)
 
     def _playNotes(self, activePins):
         for pin in activePins:
@@ -49,6 +36,10 @@ class PianoStepsRunner(ArduinoSerial):
         for note in SCALES[self.scale]:
             filename = 'pianoNotes/{}/{}.wav'.format(self.scale, note)
             self.pianoNotes.append(pygame.mixer.Sound(filename))
+            
+    def _loadConfigurations(confFile):
+        for key, value in json.load(confFile):
+            self[key] = value
 
     def _updateSerialHistory(self, activePins):
         updatedSerialHistory = [pin in activePins for pin, value in enumerate(self.serialHistory)]
@@ -76,6 +67,3 @@ class PianoStepsRunner(ArduinoSerial):
                 print(exc)
                 print('Exiting...')
                 return 1
-
-def loadConfigurations(confFile):
-    return json.load(confFile)

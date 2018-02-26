@@ -11,10 +11,10 @@ PianoSteps ps;
 
 void setup()
 {
-    ps.init();
+    assert(ps.init()) == READY) ;
 }
 
 void loop()
 {
-    exit(ps.run());
+    exit(ps.exec());
 }

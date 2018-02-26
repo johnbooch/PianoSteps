@@ -4,77 +4,80 @@
  *     Property of: Drexel Theta Tau
  *=====================================*/
 
-#include "Arduino.h"
-#include "BasicProbe.h"
 #include "PianoSteps.h"
 
 PianoSteps::PianoSteps()
 {
-
   /* Open serial connection */
-  SerialRef.begin(9600);
+  Serial.begin(9600);
 
   /* Wait for serial connection to be ready */
-  while (!SerialRef);
-
-  /* Send ready response to RSP3 */
-  SerialRef.write(READY);
-
-  /* Receive Stringyfied JSON object from RSP3 */
-  while (SerialRef.read() != STOP)
-  {
-    if (!(Serial.available() < 0)) {
-      //TODO
-    }
-  }
-
-  ProbeRef = new Probe(boardId);
+  while (!Serial);
 }
 
 PianoSteps::~PianoSteps(void)
 {
-  SerialRef.end();
-  free(sensorHistory);
-  free(thresholds);
+  Serial.end();
 }
 
 uint8_t PianoSteps::init(void)
 {
-  SerialRef.write(INIT);
-  allocateThresholdMemory();
-  lightSensorCalibration();
+  Serial.write(process = INIT);
+  sensorCalibration();
+
+  return process; 
 }
 
-uint8_t PianoSteps::run(void)
+uint8_t PianoSteps::exec(void)
 {
-  while (detectHardwareErrors() == RUN)
+  Serial.write(process = EXEC);
+  while (process == EXEC)
   {
-    for (int i = 0; i < pinCount; i++)
-    {
-      if (ProbeRef->readAnalogPin(i) > thresholds[i] + absoluteThreshold)
-        SerialRef.println(SIGNAL);
-      else
-        SerialRef.println(NO_SIGNAL);
+    detectHardwareErrors();
+    if (recalCount == RECAL_FREQ) {
+      sensorCalibration();
     }
-    if (recalCount == recalLimit)
-      lightSensorRecalibration();
-    recalCount++;
+    sensorEvaluation();
   }
-  return HALT;
+  return process;
 }
 
-int PianoSteps::detectHardwareErrors(void) {
-
-  return RUN;
+void PianoSteps::detectHardwareErrors(void) {
+  return;
 }
 
-int PianoSteps::lightSensorCalibration(void)
+void PianoSteps::sensorEvaluation(void) {
+  for (int i = 0; i < pinCount; i++)
+  {
+      if (analogRead(i) > thresholds[i] + absoluteThreshold){
+        Serial.write(SIGNAL);
+      }
+      else {
+        Serial.write(NO_SIGNAL);
+      }
+  }
+  recalCount++;
+}
+
+void PianoSteps::sensorCalibration(void)
 {
-  calculateAbsoluteThreshold();
-  calculateRecalLimit();
+  if (process == INIT); {
+    calculateAbsoluteThreshold();
+    calculateRecalLimit();  
+  }
+  calculateSensorThresholds();
 }
 
-int PianoSteps::lightSensorRecalibration(void)
+
+void PianoSteps::calculateAbsoluteThreshold(void) {
+  //TODO
+}
+
+void PianoSteps::calculateRecalLimit(void) {
+  //TODO
+}
+
+void PianoSteps::calculateSensorThresholds(void)
 {
   memset(thresholds, 0, pinCount * sizeof(int));
 
@@ -93,18 +96,9 @@ int PianoSteps::lightSensorRecalibration(void)
     }
     thresholds[pin] /= HISTORY_SIZE;
   }
-  return SUCCESS;
 }
 
-int PianoSteps::calculateAbsoluteThreshold(void) {
-  //TODO
-}
-
-int PianoSteps::allocateThresholdMemory(void) {
-  //TODO
-}
-
-int PianoSteps::calculateRecalLimit(void) {
+void PianoSteps::allocateThresholdMemory(void) {
   //TODO
 }
 

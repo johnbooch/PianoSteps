@@ -6,9 +6,7 @@
 #ifndef piano_h
 #define piano_h
 
-#include "Arduino.h"
-#include "SoftwareSerial.h"
-#include "BasicProbe.h"
+#include "ArduinoConstants.h"
 
 /* Data Transfer Encodings */
 #define START 0x00
@@ -18,7 +16,7 @@
 /* Board Operation Encodings */
 #define READY 0x03
 #define INIT 0x04
-#define RUN 0x05
+#define EXEC 0x05
 #define HALT 0x06
 
 /* Signal Values */
@@ -29,20 +27,23 @@
 #define EXPAND_WARN_STR(WARN) WARN
 #define EXPAND_FATAL_STRING(FATAL) FATAL
 
-#define HISTORY_SIZE 0x0A
+/* Hardware values */
+#define PIN_COUNT 0x08 // This value can be changed before compile time (See deploy script)
+#define RECAL_FREQ 0x64
 
 class PianoSteps
 {
 
 private:
+
   int recalCount = 0;
-  int recalLimit;
-  int allocateThresholdMemory(void);
-  int lightSensorCalibration(void);
-  int lightSensorRecalibration(void);
-  int calculateAbsoluteThreshold(void);
-  int calculateRecalLimit(void);
-  int detectHardwareErrors(void);
+  int recalLimit = RECAL_FREQ;
+
+  void sensorCalibration(void);
+  void calculateAbsoluteThreshold(void);
+  void calculateRecalLimit(void);
+  void detectHardwareErrors(void);
+  void sendErrorCode(uint8_t error);
 
 public:
   /* Constructor*/
@@ -50,16 +51,6 @@ public:
 
   /* Destructor */
   ~PianoSteps(void);
-
-  /*
-   * Serial Monitor refernence to the built in Arduino Serial Monitor
-   */
-  HardwareSerial SerialRef = Serial;
-
-  /*
-   * Basic Probe reference for use in reading pin values
-   */
-  Probe *ProbeRef;
 
   /*
    * Number of sensors connected to analog ports 
@@ -72,11 +63,16 @@ public:
   uint8_t boardId;
 
   /*
+   * Current Process
+   */
+  uint8_t process;
+
+  /*
    *  Dynamic Threshold Array for real time sensor calibration 
    *  Pin 0 | Pin 1 | Pin 2 | Pin 3 | ... Pin N |
    * Thresh1|Thresh2|Thresh3|Thresh4|    Thresh N |
    */
-  uint16_t *thresholds;
+  uint16_t thresholds[PIN_COUNT];
 
   /*
    * Dynamic Sensor History for real time calculation of sensor thresholds
@@ -87,7 +83,7 @@ public:
    *  ...
    * Hist M
    */
-  uint16_t *sensorHistory[HISTORY_SIZE];
+  uint16_t sensorHistory[PIN_COUNT][RECAL_FREQ];
 
   /*
 	 * Measurement of minimum voltage drop to be considered a signal
@@ -96,15 +92,13 @@ public:
   uint8_t absoluteThreshold;
 
   /* 
-   *
-   * 
+   * Initialization process
    */
   uint8_t init(void);
 
   /* 
-   *
-   * 
+   * Execution process
    */
-  uint8_t run(void);
+  uint8_t exec(void);
 };
 #endif
