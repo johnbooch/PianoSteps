@@ -1,7 +1,6 @@
 {
-    "PinCount": [],
-    "BoardType": [],
-    "SerialPort": [],
-    "BaudRate": [],
-    "ScaleType": []
- }
+    "pinCount": null,
+    "boardType": null,
+    "baudRate": null,
+    "scale": null
+}

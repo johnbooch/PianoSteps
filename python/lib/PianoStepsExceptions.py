@@ -10,27 +10,27 @@ class PSException(Exception):
     def __str__(self):
         return str(self.message)
 
-class PSInformation(PSException):
+class Info(PSException):
     def __str__(self):
         return '[Info] {}'.format(self.message)
 
-class PSWarning(PSException):
+class Warn(PSException):
     def __str__(self):
         return '[Warning] {}'.format(self.message)
 
-class PSError(PSException):
+class Fatal(PSException):
     def __str__(self):
         return '[Error] {}'.format(self.message)
 
 
 
-### Exceptions List ###
+### Arduino Exceptions List ###
 
 # When supplied with a string, each of these returns a template for creating
 # PSException objects containing that string
-INFO = lambda message: lambda: PSInformation(message)
-WARN = lambda message: lambda: PSWarning(message)
-FATAL = lambda message: lambda: PSError(message)
+INFO = lambda message: lambda: Info(message)
+WARN = lambda message: lambda: Warn(message)
+FATAL = lambda message: lambda: Fatal(message)
 
 ERRORS = {
     'Serial':
@@ -61,7 +61,7 @@ ERRORS = {
         ]
 }
 
-def isErrorCode(errID=None, errType=None):
+def isErrorCode(errType=None, errID=None):
     '''Returns True if the serialized exception is valid. False otherwise'''
     
     if errID is None or errType is None:
@@ -76,13 +76,10 @@ def isErrorCode(errID=None, errType=None):
     else:
         return True
 
-def deserialize(errID, errType):
+def deserialize(errType, errID):
     '''Deserializes and returns an exception object'''
     
-    if isErrorCode(errID, errType):
-        err = ERRORS[errType][errID]
-        return err()
-        
+    if isErrorCode(errType, errID):
+        return ERRORS[errType][errID]()
     else:
-        err = ERRORS['Invalid Error'][0]
-        return err()
+        return ERRORS['Invalid Error'][0]()
