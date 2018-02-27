@@ -4,14 +4,14 @@
  *     Property of: Drexel Theta Tau
  *=====================================*/
 
+#include "assert.h"
 #include "PianoSteps.h"
-
 
 PianoSteps ps;
 
 void setup()
 {
-    assert(ps.init()) == READY) ;
+    assert(ps.init() == READY) ;
 }
 
 void loop()

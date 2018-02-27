@@ -8,16 +8,12 @@
 
 #include "ArduinoConstants.h"
 
-/* Data Transfer Encodings */
-#define START 0x00
-#define ACK 0x01
-#define STOP 0x02
-
 /* Board Operation Encodings */
-#define READY 0x03
-#define INIT 0x04
-#define EXEC 0x05
-#define HALT 0x06
+#define INIT 0x03
+#define CALIBRATED 0x04
+#define READY 0x05
+#define EXEC 0x06
+#define HALT 0x07
 
 /* Signal Values */
 #define SIGNAL 0x01
@@ -30,6 +26,9 @@
 /* Hardware values */
 #define PIN_COUNT 0x08 // This value can be changed before compile time (See deploy script)
 #define RECAL_FREQ 0x64
+#define CALIBRATION_DELAY 0x100
+#define CALIBRATION_BLINKS 0xA
+#define MOFSET_PIN 0x1
 
 class PianoSteps
 {
@@ -39,10 +38,14 @@ private:
   int recalCount = 0;
   int recalLimit = RECAL_FREQ;
 
-  void sensorCalibration(void);
-  void calculateAbsoluteThreshold(void);
-  void calculateRecalLimit(void);
-  void detectHardwareErrors(void);
+  uint8_t sensorCalibration(void);
+  uint8_t calculateAbsoluteThreshold(void);
+  void calculateSensorThresholds(void);
+  void getLowValue(uint16_t lows[PIN_COUNT][CALIBRATION_BLINKS], uint8_t pos);
+  void getHighValue(uint16_t lows[PIN_COUNT][CALIBRATION_BLINKS], uint8_t pos);
+  void calcAvgDiffArray(uint16_t lows[PIN_COUNT][CALIBRATION_BLINKS], uint16_t highs[PIN_COUNT][CALIBRATION_BLINKS]);
+  uint8_t detectHardwareErrors(void);
+  void sensorEvaluation(void);
   void sendErrorCode(uint8_t error);
 
 public:
@@ -51,16 +54,6 @@ public:
 
   /* Destructor */
   ~PianoSteps(void);
-
-  /*
-   * Number of sensors connected to analog ports 
-   */
-  uint8_t pinCount;
-
-  /*
-   * Arduino Board ID
-   */
-  uint8_t boardId;
 
   /*
    * Current Process
@@ -89,7 +82,7 @@ public:
 	 * Measurement of minimum voltage drop to be considered a signal
 	 * Calculated during initial calibration of Piano Steps Environment
 	 */
-  uint8_t absoluteThreshold;
+  uint8_t absoluteThresholds[PIN_COUNT];
 
   /* 
    * Initialization process
