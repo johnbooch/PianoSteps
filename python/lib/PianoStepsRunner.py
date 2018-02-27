@@ -109,13 +109,13 @@ class PianoStepsRunner:
             try:
                 self.processSerialLine(self.readSerialLine())
                 
-            except Exceptions.PSInformation as exc:
+            except Exceptions.Info as exc:
                 print(exc)
                 
-            except Exceptions.PSWarning as exc:
+            except Exceptions.Warn as exc:
                 print(exc)
                 
-            except Exceptions.PSError as exc:
+            except Exceptions.Fatal as exc:
                 print(exc)
                 print('Exiting...')
                 return 1
