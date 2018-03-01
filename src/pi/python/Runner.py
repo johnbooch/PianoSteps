@@ -2,10 +2,10 @@ import pygame
 import json
 
 from ArduinoSerial import ArduinoSerial
-from PianoStepsErrorHandler import PSEHandler
-from PianoStepsConfigurer import PianoStepsConfigurer
+from ErrorHandler import PSEHandler
+from Configurer import Configurer
 
-import PianoStepsExceptions as Exceptions
+import Exceptions
 
 # All config value names
 SCALE = 'scale'
@@ -28,7 +28,7 @@ NOTE_SCALES = {
 def getNoteFile(scale, note):
     return 'pianoNotes/{}/{}.wav'.format(scale, note)
 
-class PianoStepsRunner:
+class Runner:
     
     def __init__(self, confFile):
         self.loadConfigurations(confFile)

@@ -1,11 +1,10 @@
 import os
 
-class PianoStepsErrorHandler:
+class ErrorHandler:
     def __init__(self, logPath):
         self.logFile = open(logPath, 'a+')
 
     def evaluateError(self, PSE):
-
         self.logError(PSE.logErrorMessage)
         self.evaluateErrorSeverity(PSE.error['severity'])
 
@@ -25,5 +24,5 @@ class PianoStepsErrorHandler:
     def __del__(self):
         self.logFile.close()
 
-PianoStepsLogPath = os.path.dirname(os.path.abspath(__file__))
-PSEHandler = PianoStepsErrorHandler(PianoStepsLogPath + 'logs/PianoSteps.log')
+LogPath = os.path.dirname(os.path.abspath(__file__))
+PSEHandler = ErrorHandler(LogPath + 'logs/PianoSteps.log')

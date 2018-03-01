@@ -1,4 +1,3 @@
-from PianoStepsError import PianoStepsError
 from serial import Serial, SerialException, SerialTimeoutException
 
 class ArduinoSerial(Serial):
