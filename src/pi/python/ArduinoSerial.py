@@ -1,24 +1,23 @@
 from serial import Serial, SerialException, SerialTimeoutException
 
-class ArduinoSerial(Serial):
-
-    def __init__(self, port, baudrate=9600, timeout=0.1):
-        Serial.__init__(baudrate, timeout)
-        self.port = port
+class ArduinoSerial:
     
-    def connect(self):
-        self.open()
-
-    def readSerialLine(self):
-        data = self.readline()
-        return data
-
-    def readSerial(self, size):
-        data = self.read(size)
-        return data
-
-    def writeSerial(self, data):
-        self.write(data)
-
-    def disconnect(self):
-        self.close()
+    
+    def __init__(self, port, baudrate=9600, timeout=0.1):
+        self.port = port
+        self.connection = Serial(baudrate, timeout)
+    
+    def open(self):
+        self.connection.open()
+    
+    def close(self):
+        self.connection.close()
+    
+    def listen(self, listener):
+        while True:
+            line = self.connection.readline()
+            if listener(line):
+                break
+    
+    def write(self, data):
+        self.connection.write(data)
