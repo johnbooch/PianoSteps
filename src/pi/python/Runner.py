@@ -1,126 +1,62 @@
 import pygame
 import json
+import os
 
 from ArduinoSerial import ArduinoSerial
 from ErrorHandler import PSEHandler
-from Configurer import Configurer
+from PiGPIO import PiGPIO
+
 
 import Exceptions
 
-# All config value names
+# GLOBAL VALUES
 SCALE = 'scale'
 PIN_COUNT = 'pinCount'
-BOARD_TYPE = 'boardType'
 BAUD_RATE = 'baudRate'
+TIMEOUT = 'timeout'
+GPIO_PINS = 'gpioPins' 
+# Gpio pin list should be in the correct note order. The first gpio pin gives the
+# pin number for the first note and so on.
+
+CONFIG_PATH = 'resources/META-INF/PianoSteps.xml'
+SOUND_PATH = 'resources/notes/'
 
 # A list of required config values
-REQUIRED_CONFIG_OPTS = [PIN_COUNT, BOARD_TYPE, BAUD_RATE]
+REQUIRED_CONFIG_OPTS = [PIN_COUNT, SCALE, PIN_COUNT, GPIO_PINS]
 
 # A dict mapping config options to their default values
-DEFAULT_CONFIG_OPTS = {
-    SCALE: 'ChromaticScale'
+DEFAULT_CONFIGS = {
+    SCALE: 'ChromaticScale',
+    BAUD_RATE: 9600,
+    TIMEOUT: 0.1
 }
-
-NOTE_SCALES = {
-    'ChromaticScale': ["a", "b", "bb", "c", "cb", "d", "e", "eb", "g#", "f", "fb", "g", "gb"]
-}
-
-def getNoteFile(scale, note):
-    return 'pianoNotes/{}/{}.wav'.format(scale, note)
 
 class Runner:
     
-    def __init__(self, confFile):
-        self.loadConfigurations(confFile)
-        self.loadSoundFiles()
-        
-        self.timeout = 0.1
-        self.pinHistory = [False] * self.config[PIN_COUNT]
-        # TODO determine serial port
-        self.serial = ArduinoSerial(self.serialPort, self.config[BAUD_RATE], self.timeout)
-    
-    def playNotes(self, activePins):
-        for pin in activePins:
-            if 0 <= pin < len(self.pianoNotes):
-                self.pianoNotes[pin].play()
-    
-    def isValidPinState(state):
-        return len(state) == self.pinCount and all([c in '01' for c in state])
-    
-    def readSerialLine():
-        pass # TODO
-    
-    def processException(line):
-        raise Exceptions.deserialize(line[0], line[1])
-    
-    def processNotes(line):
-        vals = [x == '1' for x in line[0]]
-        pins = [pin for pin, value in enumerate(vals) if (value and value != self.pinHistory[pin])]
-        self.playNotes(pins)
-        self.updatePinHistory(vals)
-    
-    def processSerialLine(self, line):
-        line = line.strip().split(' ')
-        
-        # check if line represents an Arduino error
-        if len(line) == 2 and Exceptions.isErrorCode(*line):
-            self.processException(line)
-        
-        # check if line represents a valid pin state
-        elif len(line) == 1 and isValidPinState(*line)
-            self.processNotes(line)
-        
-        else:
-            # TODO print as a warning rather than raising an exception
-            raise Exceptions.fatal('Invalid line read from serial port')
-    
-    def loadSoundFiles(self):
-        if self.config['scale'] not in NOTE_SCALES:
-            raise Exceptions.Fatal('Invalid scale "{}"'.format(self.config['scale']))
-        
-        self.pianoNotes = []
-        for note in NOTE_SCALES[self.scale]:
-            filename = getNoteFile(self.scale, note)
-            self.pianoNotes.append(pygame.mixer.Sound(filename))
-            
+    def __init__(self, MAIN_DIR):
+        self.MAIN_DIR = MAIN_DIR
+        self.configure(os.path.join(self.MAIN_DIR, CONFIG_PATH))
+        self.serial = ArduinoSerial(self.config[SERIAL_PORT], self.config[BAUD_RATE], self.config[TIMEOUT]) # TODO determine serial port
+        self.mixer = PiMixer(self.config[PIN_COUNT], self.config[SCALE])
+        self.piGPIO= PiGPIO(self.mixer, self.config[GPIO_PINS])
+
+    def configure(self, confFile):
+            self.loadConfigurations(confFile)
+            self.validateConfigurations()
+
     def loadConfigurations(confFile):
         try:
-            self.config = json.load(open(confFile))
+            self.config = {**DEFAULT_CONFIGS, **json.load(open(confFile))}
         except FileNotFoundError as e:
             raise Exceptions.Fatal('Could not find config file "{}"'.format(confFile))
         except json.decoder.JSONDecodeError as e:
             raise Exceptions.Fatal('Syntax error in config file "{}"'.format(confFile))
-        
-        # check for config options which have default values
-        for name in DEFAULT_CONFIG_OPTS:
-            if name not in self.config or self.config[name] is None:
-                self.config[name] = DEFAULT_CONFIG_OPTS[name]
-        
-        # check for config options which are required
+    
+    def validateConfigurations(): 
         for name in REQUIRED_CONFIG_OPTS:
             if name not in self.config or self.config[name] is None:
                 raise Exceptions.Fatal('Missing configuration option "{}" in config file "{}"'.format(name, confFile))
+        
+        if self.config[PIN_COUNT] is not len(self.config[GPIO_PINS]):
+                raise Exceptions.Fatal('Pin Count: "{}" and GPIO Pins: "{}" do not match"'.format(self.config[PIN_COUNT], len(self.config[GPIO_PINS]))
 
-    def updatePinHistory(self, pinValues):
-        self.pinHistory = pinValues
-    
-    def run(self):
-         while True:
-            try:
-                self.processSerialLine(self.readSerialLine())
-                
-            except Exceptions.Info as exc:
-                print(exc)
-                
-            except Exceptions.Warn as exc:
-                print(exc)
-                
-            except Exceptions.Fatal as exc:
-                print(exc)
-                print('Exiting...')
-                return 1
-                
-            except Exception as exc:
-                print(exc)
-                print('Exiting...')
-                return 1

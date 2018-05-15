@@ -1,6 +1,6 @@
 /*=====================================
  *         Piano Steps CPP
- *       Written by: John Buccieri
+ *       Written by: John Buccieri and Curtis Bechtel
  *     Property of: Drexel Theta Tau
  *=====================================*/
 
