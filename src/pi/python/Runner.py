@@ -42,7 +42,7 @@ class Runner:
 
     def configure(self, confFile):
             self.loadConfigurations(confFile)
-            self.validateConfigurations()
+            self.validateCo  nfigurations()
 
     def loadConfigurations(confFile):
         try:
