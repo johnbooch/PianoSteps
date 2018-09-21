@@ -1,8 +1,8 @@
-#Piano Steps
+# Piano Steps
 
 Coming soon
 
-###Setup
+## Setup
 
 Coming soon
 
