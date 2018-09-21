@@ -1,3 +1,5 @@
+#Build directory 
+/build
 # OS Generated Files #
 ######################
 .DS_Store

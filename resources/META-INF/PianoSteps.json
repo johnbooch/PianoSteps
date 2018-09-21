@@ -1,6 +1,8 @@
 {
     "baudRate": null,    
+    "GPIOS": [],
+    "logLevel": "INFO",
     "pinCount": null,
     "scale": null,
-    "GPIOS": []
-}
+    "serialPort": null
+} 

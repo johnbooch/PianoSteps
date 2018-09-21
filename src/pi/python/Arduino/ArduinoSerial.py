@@ -8,7 +8,7 @@ class ArduinoSerial:
     
     def __init__(self, port, baudrate=9600, timeout=0.1):
         self.port = port
-        self.connection = Serial(baudrate, timeout)
+        self.connection = Serial(baudate=baudrate, timeout=timeout)
     
     def open(self):
         """
@@ -30,24 +30,7 @@ class ArduinoSerial:
             Nothing
         """
         self.connection.close()
- 
-    def registerErrorListener(self, listener):
-        """
-        Registers error listener on new thread
-
-        Args:
-            listener: User defined error listener function
-        Returns:
-            Nothing
-        """
-        def errorListener():
-            while True:
-                line = self.connection.readline()
-                if listener(line):
-                    return
-        
-        Thread(target=errorListener).start()
-    
+            
     def write(self, data):
         """
         Write data byte string to serial connection
@@ -57,3 +40,13 @@ class ArduinoSerial:
             Nothing
         """
         self.connection.write(data)
+
+    def read(self, size=1):
+        """
+        Write data byte string to serial connection
+        Args:
+            size: Number of bytes to read
+        Returns:
+            Byte of data read
+        """
+        return self.connection.read(size)

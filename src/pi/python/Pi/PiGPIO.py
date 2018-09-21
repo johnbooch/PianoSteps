@@ -1,20 +1,16 @@
 import pigpio
 
-LOOP = -1
-
 class PiGPIO:
-    __init__(self, mixer, GPIOS):
-    """
-    Constructor
+    LOOP = -1
 
-    
-    """
+    def __init__(self, mixer, GPIOS):
         self.gpio = pigpio.pi()
         self.map = {GPIO: PIN for (PIN, GPIO) in enumerate(GPIOS)}
         self.mixer = mixer
-        self.registerGPIOcallbacks(self, GPIOS)
+        self.__setPinModesInput(GPIOS)
+        self.__registerGPIOcallbacks(GPIOS)
     
-    def setPinModesInput(self, GPIOS):
+    def __setPinModesInput(self, GPIOS):
         """
         Set GPIO pin modes to input
 
@@ -26,7 +22,7 @@ class PiGPIO:
         for GPIO in GPIOS:
             self.gpio.set_mode(GPIO, pigpio.INPUT)
 
-    def registerGPIOcallbacks(self, GPIOS):
+    def __registerGPIOcallbacks(self, GPIOS):
         """
         Registers GPIO callbacks on each input GPIO pin
 
@@ -35,7 +31,7 @@ class PiGPIO:
         Returns:
             Nothing
         """
-        for GPIO in GPIOS
+        for GPIO in GPIOS:
             self.gpio.callback(GPIO, pigpio.EITHER_EDGE, self.gpioCallback)
             
     def gpioCallback(self, pin, level, tick):
