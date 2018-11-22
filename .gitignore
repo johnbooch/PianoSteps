@@ -1,7 +1,12 @@
-#Build directory 
+# Build directory 
 /build
+# Environment directory
+/env
+# Python generated files
+/*__pycache__/*
+*.pyc
+*.pyo
 # OS Generated Files #
-######################
 .DS_Store
 .DS_Store?
 .vscode

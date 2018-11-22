@@ -1,9 +1,19 @@
-import argparse
-import subprocess
+import os
+from deploy_utils import clean_build_scaffold, mk_build_scaffold, run_commands_seq, BUILD_PATH, ENV_PATH, logger
+from parsers import create_deploy_parser
 
-parser = argparse.ArgumentParser(description='Piano Steps deploy script')
+parser = create_deploy_parser()
+opts = parser.parse_args()
 
-parser.add_argument('-c', '--clean', action='store_true', default=False, help='Clean build directory')
-parser.add_argument('-b', '--build', action='store_true', default=False, help='Build c source code')
-parser.add_argument('-d', '--debug', action='store_true', default=False, help = 'Run deployment in debug mode')
-parser.add_argument('-v', '--verbose', action='store_true', default=False, help = 'Run deployment in verbose mode')
+if not os.path.exists(BUILD_PATH):
+    logger.info('Creating build directory scaffold')
+    mk_build_scaffold(BUILD_PATH)
+
+if opts.clean:
+    clean_build_scaffold(BUILD_PATH)
+
+assert(os.path.exists(ENV_PATH)) # Check to make sure python environment exists
+
+COMMANDS = ["python deploy_arduino.py --upload", "python deploy_pi.py", "python "+os.path.join(BUILD_PATH, 'pi', 'run.py')]
+
+run_commands_seq(COMMANDS)
